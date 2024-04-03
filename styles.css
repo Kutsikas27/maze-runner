@@ -1,0 +1,35 @@
+#container {
+  width: 600px;
+  height: 600px;
+  position: relative;
+  background: rgb(223, 223, 220);
+  border: 1px solid black;
+}
+#player-box {
+  width: 100px;
+  height: 100px;
+  position: absolute;
+  background-color: rgb(221, 91, 180);
+}
+body {
+  display: flex;
+  justify-content: center;
+  height: 100vh;
+  margin: 0;
+  background-color: rgb(28, 28, 27);
+}
+#stopwatch {
+  text-align: center;
+  color: aliceblue;
+  margin-bottom: 50px;
+  margin-top: 50px;
+  font-size: 50px;
+}
+#wall {
+  position: absolute;
+  background-color: black;
+  width: 30px;
+  height: 150px;
+  top: 50px;
+  left: 150px;
+}
