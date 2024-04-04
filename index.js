@@ -5,7 +5,7 @@ const canvas = document.querySelector("canvas");
 canvas.width = 800;
 canvas.height = 900;
 const c = canvas.getContext("2d");
-
+//
 const maze2D = [
   ["Y", "Y", "R", "Y", "Y", "Y", "Y", "Y", "Y", "Y", "Y", "Y", "Y", "Y", "Y"],
   [
