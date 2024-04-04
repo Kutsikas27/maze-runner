@@ -1,81 +1,137 @@
 // @ts-nocheck
 import { startStopwatch } from "./timer.js";
-const playerBox = document.getElementById("player-box");
-const container = document.getElementById("container");
-const wallEl = document.getElementById("wall");
+
+const canvas = document.querySelector("canvas");
+canvas.width = 800;
+canvas.height = 900;
+const c = canvas.getContext("2d");
+
+const maze2D = [
+  ["Y", "Y", "R", "Y", "Y", "Y", "Y", "Y"],
+  ["Y", "Y", "R", "Y", "R", "R", "R", "Y"],
+  ["R", "Y", "R", "", "Y", "R", "Y", "Y"],
+  ["R", "Y", "R", "R", "Y", "R", "R", "R"],
+  ["R", "Y", "Y", "Y", "Y", "R", "Y", "Y"],
+  ["R", "Y", "R", "R", "R", "R", "R", "Y"],
+  ["R", "Y", "R", "Y", "Y", "Y", "Y", "Y"],
+  ["R", "Y", "R", "Y", "R", "R", "Y", "R"],
+  ["R", "Y", "Y", "Y", "R", "Y", "Y", "F"],
+];
+const cellSide = 100;
 
 const player = {
-  x: playerBox.offsetLeft,
-  y: playerBox.offsetTop,
-  clientWidth: playerBox.clientWidth,
-  clientHeight: playerBox.clientHeight,
+  x: 0,
+  y: 0,
+  width: 100,
+  height: 100,
+  speed: 20,
+};
+const getMap = () => {
+  for (let i = 0; i < maze2D.length; i++) {
+    for (let j = 0; j < maze2D[i].length; j++) {
+      let x = j * cellSide;
+      let y = i * cellSide;
+
+      if (maze2D[i][j] === "Y") {
+        c.beginPath();
+        c.fillStyle = "#fbfaf3";
+        c.fillRect(x, y, cellSide, cellSide);
+      }
+      if (maze2D[i][j] === "F") {
+        c.beginPath();
+        c.fillStyle = "#ff3b2f";
+        c.fillRect(x, y, cellSide, cellSide);
+      }
+      if (maze2D[i][j] === "R") {
+        c.beginPath();
+        c.fillStyle = "#007a2f";
+        c.fillRect(x, y, cellSide, cellSide);
+      }
+    }
+  }
 };
 
-const wall = {
-  x: wallEl.offsetLeft,
-  y: wallEl.offsetTop,
-  clientWidth: wallEl.clientWidth,
-  clientHeight: wallEl.clientHeight,
-};
+const animate = () => {
+  requestAnimationFrame(animate);
+  c.clearRect(0, 0, innerWidth, innerHeight);
+  getMap();
+  c.fillStyle = "#3498db";
+  c.fillRect(player.x, player.y, player.width, player.height);
 
+  c.beginPath();
+};
 document.addEventListener("keydown", (event) => {
   startStopwatch();
-  let canMove = true;
-
+  let futureX = player.x;
+  let futureY = player.y;
   switch (event.key) {
     case "ArrowUp":
       if (player.y > 0) {
-        player.y -= 10;
+        futureY -= player.speed;
       }
       break;
     case "ArrowDown":
-      if (player.y < container.clientHeight - playerBox.clientHeight) {
-        player.y += 10;
+      if (player.y < canvas.height - player.height) {
+        futureY += player.speed;
       }
       break;
+
     case "ArrowLeft":
       if (player.x > 0) {
-        player.x -= 10;
+        futureX -= player.speed;
       }
       break;
     case "ArrowRight":
-      if (player.x < container.clientWidth - playerBox.clientWidth) {
-        player.x += 10;
+      if (player.x < canvas.width - player.width) {
+        futureX += player.speed;
       }
       break;
   }
 
-  if (aabb(player, wall)) {
-    canMove = false;
+  if (!checkCollisionWithWall(futureX, futureY)) {
+    player.x = futureX;
+    player.y = futureY;
   }
-
-  if (!canMove) {
-    switch (event.key) {
-      case "ArrowUp":
-        player.y += 10;
-        break;
-      case "ArrowDown":
-        player.y -= 10;
-        break;
-      case "ArrowLeft":
-        player.x += 10;
-        break;
-      case "ArrowRight":
-        player.x -= 10;
-        break;
-    }
-  }
-  updatePlayerPosition();
 });
 
-const aabb = (a, b) => {
+const checkCollisionWithWall = (x, y) => {
+  for (let i = 0; i < maze2D.length; i++) {
+    for (let j = 0; j < maze2D[i].length; j++) {
+      let tileX = j * cellSide;
+      let tileY = i * cellSide;
+      let wall = {
+        x: tileX,
+        y: tileY,
+        width: cellSide,
+        height: cellSide,
+      };
+
+      let futurePosition = {
+        x: x,
+        y: y,
+        width: player.width,
+        height: player.height,
+      };
+      if (maze2D[i][j] === "R") {
+        if (isCollision(futurePosition, wall)) {
+          return true;
+        }
+      }
+      if (maze2D[i][j] === "F") {
+        if (isCollision(futurePosition, wall)) {
+          alert("You win!");
+        }
+      }
+    }
+  }
+  return false;
+};
+const isCollision = (rect1, rect2) => {
   return (
-    a.x < b.x + b.clientWidth &&
-    a.x + a.clientWidth > b.x &&
-    a.y < b.y + b.clientHeight &&
-    a.y + a.clientHeight > b.y
+    rect1.x < rect2.x + rect2.width &&
+    rect1.x + rect1.width > rect2.x &&
+    rect1.y < rect2.y + rect2.height &&
+    rect1.y + rect1.height > rect2.y
   );
 };
-
-const updatePlayerPosition = () =>
-  (playerBox.style.transform = `translate(${player.x}px, ${player.y}px)`);
+animate();

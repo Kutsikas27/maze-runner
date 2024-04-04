@@ -33,3 +33,6 @@ body {
   top: 50px;
   left: 150px;
 }
+canvas {
+  background-color: aliceblue;
+}
