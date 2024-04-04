@@ -1,5 +1,5 @@
 // @ts-nocheck
-import { startStopwatch } from "./timer.js";
+import { startStopwatch, stopStopwatch } from "./timer.js";
 
 const canvas = document.querySelector("canvas");
 canvas.width = 800;
@@ -417,7 +417,9 @@ const checkCollisionWithWall = (x, y) => {
       }
       if (maze2D[i][j] === "F") {
         if (isCollision(futurePosition, wall)) {
-          alert("You win!");
+          const endTime = document.getElementById("stopwatch").innerHTML;
+          stopStopwatch();
+          alert("You win! Your time was: " + endTime);
         }
       }
     }
