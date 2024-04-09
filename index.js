@@ -7,20 +7,22 @@ canvas.width = 800;
 canvas.height = 900;
 const c = canvas.getContext("2d");
 
-const cellSide = 50;
+const cellSide = 20;
 
 const player = {
   x: 0,
   y: 0,
-  width: 50,
-  height: 50,
-  speed: 50,
+  width: 20,
+  height: 20,
+  speed: 20,
 };
 const camera = {
-  x: 0,
-  y: 0,
-  width: canvas.width,
-  height: canvas.height,
+  get x() {
+    return -(canvas.width / 2 - player.x);
+  },
+  get y() {
+    return -(canvas.height / 2 - player.y);
+  },
 };
 // Generate a random maze of size 16x16
 const maze2D = generateRandomMaze(45, 40);
@@ -29,8 +31,8 @@ console.log(maze2D);
 const getMap = () => {
   for (let i = 0; i < maze2D.length; i++) {
     for (let j = 0; j < maze2D[i].length; j++) {
-      let x = j * cellSide - camera.x; // Adjust x position with camera offset
-      let y = i * cellSide - camera.y; // Adjust y position with camera offset
+      let x = j * cellSide;
+      let y = i * cellSide;
 
       if (maze2D[i][j] === 0) {
         c.beginPath();
@@ -53,17 +55,13 @@ const getMap = () => {
 
 const animate = () => {
   requestAnimationFrame(animate);
+
   c.clearRect(0, 0, innerWidth, innerHeight);
   getMap();
+
   c.fillStyle = "#3498db";
-  camera.x = player.x - canvas.width / 2;
-  camera.y = player.y - canvas.height / 2;
-  c.fillRect(
-    player.x - camera.x,
-    player.y - camera.y,
-    player.width,
-    player.height
-  ); // Adjust player position with camera offset
+
+  c.fillRect(player.x, player.y, player.width, player.height);
 
   c.beginPath();
 };
@@ -98,7 +96,6 @@ document.addEventListener("keydown", (event) => {
   if (!checkCollisionWithWall(futureX, futureY)) {
     player.x = futureX;
     player.y = futureY;
-    console.log("test");
   }
 });
 
@@ -145,4 +142,3 @@ const isCollision = (rect1, rect2) => {
   );
 };
 animate();
-
